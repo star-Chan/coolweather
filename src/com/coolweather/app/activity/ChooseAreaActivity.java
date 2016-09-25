@@ -14,11 +14,16 @@ import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -217,6 +222,13 @@ public class ChooseAreaActivity extends Activity {
 						closeProgressDialog();
 						Toast.makeText(ChooseAreaActivity.this, "加载失败",
 								Toast.LENGTH_SHORT).show();
+						ConnectivityManager mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+						NetworkInfo mNetworkInfo = mConnectivityManager
+								.getActiveNetworkInfo();
+						if (mNetworkInfo == null) {
+							Toast.makeText(ChooseAreaActivity.this, "当前没有网络",
+									Toast.LENGTH_SHORT).show();
+						}
 					}
 				});
 			}
@@ -254,11 +266,34 @@ public class ChooseAreaActivity extends Activity {
 		} else if (currentLevel == LEVEL_CITY) {
 			queryProvinces();
 		} else {
-			if(isFromWeatherActivity){
-				Intent intent=new Intent(this, WeatherActivity.class);
+			if (isFromWeatherActivity) {
+				Intent intent = new Intent(this, WeatherActivity.class);
 				startActivity(intent);
 			}
 			finish();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			Toast.makeText(this, "该软件已是最新版本", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.about:
+			Intent intent = new Intent(ChooseAreaActivity.this,
+					AboutActivity.class);
+			startActivity(intent);
+			break;
+		default:
+			break;
+		}
+		return true;
 	}
 }
